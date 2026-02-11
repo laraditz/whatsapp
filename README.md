@@ -16,6 +16,7 @@ A comprehensive Laravel package for seamless integration with the Official Whats
 - Webhook handling with automatic signature verification
 - Laravel events for incoming messages and status updates
 - Database logging for API requests, messages, webhooks, and templates
+- Laravel notification channel for WhatsApp
 - Artisan commands for syncing templates and message statuses
 
 ## Requirements
@@ -101,6 +102,34 @@ Whatsapp::template()->create(
 );
 ```
 
+### Laravel Notification
+
+```php
+use Illuminate\Notifications\Notification;
+use Laraditz\Whatsapp\Channels\WhatsappChannel;
+use Laraditz\Whatsapp\Messages\WhatsappMessage;
+
+class OrderShipped extends Notification
+{
+    public function via($notifiable): array
+    {
+        return [WhatsappChannel::class];
+    }
+
+    public function toWhatsapp($notifiable): WhatsappMessage
+    {
+        return WhatsappMessage::create()
+            ->template(name: 'order_update', language: 'en')
+            ->component(type: 'body', parameters: [
+                ['type' => 'text', 'text' => 'ORDER-123'],
+            ]);
+    }
+}
+
+// Send it
+$user->notify(new OrderShipped($order));
+```
+
 ### Multi-Account
 
 ```php
@@ -123,6 +152,7 @@ Whatsapp::account('support')->message()->to('60123456789')->text('Hi from suppor
 - [Sending Messages](docs/sending-messages.md) - All message types with examples
 - [Template Management](docs/template-management.md) - CRUD operations and syncing
 - [Webhooks & Events](docs/webhooks.md) - Webhook setup and Laravel event handling
+- [Notifications](docs/notifications.md) - Laravel notification channel integration
 - [Error Handling](docs/error-handling.md) - Exception types and handling patterns
 
 ## Testing
