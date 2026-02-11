@@ -1,4 +1,6 @@
 /vendor
 /CLAUDE.md
-/.phpunit.cache
 /composer.lock
+/.phpunit.cache
+/.phpunit.result.cache
+/.claude

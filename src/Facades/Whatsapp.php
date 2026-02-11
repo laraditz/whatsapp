@@ -3,18 +3,19 @@
 namespace Laraditz\Whatsapp\Facades;
 
 use Illuminate\Support\Facades\Facade;
+use Laraditz\Whatsapp\Services\MessageService;
+use Laraditz\Whatsapp\Services\TemplateService;
 
 /**
- * @see \Laraditz\Whatsapp\Skeleton\SkeletonClass
+ * @method static \Laraditz\Whatsapp\Whatsapp account(string $name)
+ * @method static MessageService message()
+ * @method static TemplateService template()
+ *
+ * @see \Laraditz\Whatsapp\Whatsapp
  */
 class Whatsapp extends Facade
 {
-    /**
-     * Get the registered name of the component.
-     *
-     * @return string
-     */
-    protected static function getFacadeAccessor()
+    protected static function getFacadeAccessor(): string
     {
         return 'whatsapp';
     }

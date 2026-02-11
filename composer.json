@@ -17,6 +17,10 @@
   ],
   "require": {
     "php": "^8.2",
+    "illuminate/database": "^12.51",
+    "illuminate/events": "^12.51",
+    "illuminate/http": "^12.51",
+    "illuminate/routing": "^12.51",
     "illuminate/support": "^11.0|^12.0"
   },
   "require-dev": {
