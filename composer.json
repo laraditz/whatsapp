@@ -1,0 +1,53 @@
+{
+  "name": "laraditz/whatsapp",
+  "description": "Laravel package for interacting with official Whatsapp API.",
+  "keywords": [
+    "laraditz",
+    "whatsapp"
+  ],
+  "homepage": "https://github.com/laraditz/whatsapp",
+  "license": "MIT",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Raditz Farhan",
+      "email": "raditzfarhan@gmail.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "^8.2",
+    "illuminate/support": "^11.0|^12.0"
+  },
+  "require-dev": {
+    "orchestra/testbench": "^9.0|^10.0",
+    "phpunit/phpunit": "^11.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Laraditz\\Whatsapp\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Laraditz\\Whatsapp\\Tests\\": "tests"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit",
+    "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Laraditz\\Whatsapp\\WhatsappServiceProvider"
+      ],
+      "aliases": {
+        "Whatsapp": "Laraditz\\Whatsapp\\Facades\\Whatsapp"
+      }
+    }
+  }
+}
