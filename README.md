@@ -6,6 +6,8 @@
 
 A comprehensive Laravel package for seamless integration with the Official WhatsApp Cloud API.
 
+<a href="https://www.buymeacoffee.com/raditzfarhan" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 50px !important;width: 200px !important;" ></a>
+
 ## Features
 
 - Multi-account support (config-based or database-driven)
