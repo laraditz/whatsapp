@@ -155,14 +155,24 @@ Whatsapp::message()
 
 ### Template
 
+All methods support both positional and named arguments:
+
 ```php
-// Simple template
+// Using named arguments
 Whatsapp::message()
     ->to('60123456789')
     ->template(name: 'hello_world', language: 'en')
     ->send();
 
-// Template with body parameters
+// Using positional arguments
+Whatsapp::message()
+    ->to('60123456789')
+    ->template('hello_world', 'en')
+    ->send();
+```
+
+```php
+// Template with body parameters (named)
 Whatsapp::message()
     ->to('60123456789')
     ->template(name: 'order_update', language: 'en')
@@ -172,6 +182,18 @@ Whatsapp::message()
     ])
     ->send();
 
+// Same example using positional arguments
+Whatsapp::message()
+    ->to('60123456789')
+    ->template('order_update', 'en')
+    ->component('body', [
+        ['type' => 'text', 'text' => 'ORDER-123'],
+        ['type' => 'text', 'text' => 'shipped'],
+    ])
+    ->send();
+```
+
+```php
 // Template with header image and body parameters
 Whatsapp::message()
     ->to('60123456789')
