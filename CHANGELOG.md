@@ -1,7 +1,20 @@
 # Changelog
 
-All notable changes to `whatsapp` will be documented in this file
+All notable changes to `laraditz/whatsapp` will be documented in this file
 
-## 1.0.0 - 201X-XX-XX
+## 1.0.0 - 2026-02-11
 
-- initial release
+### Added
+
+- Multi-account support with config and database drivers
+- Fluent message API for all WhatsApp message types (text, image, video, audio, document, sticker, location, contacts, interactive, template, reaction)
+- `payload()` method for deep merging custom data with fluent-built payloads
+- Template management (list, get, create, update, delete) with cursor-based pagination
+- Webhook controller with Meta verification challenge and `X-Hub-Signature-256` validation
+- Laravel events: `MessageReceived`, `MessageDelivered`, `MessageRead`
+- Database logging for API requests, messages, webhooks, and templates
+- Eloquent models with PHP backed enums for message direction, message status, and template status
+- Artisan commands: `whatsapp:sync-templates` and `whatsapp:sync-messages`
+- Publishable config and migrations using `publishesMigrations()` (Laravel 11+)
+- Typed exceptions: `WhatsappApiException`, `WhatsappAuthException`, `WhatsappRateLimitException`, `AccountNotFoundException`
+- Response objects (`MessageResponse`, `TemplateResponse`) with dot notation access
