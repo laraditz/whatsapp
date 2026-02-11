@@ -102,6 +102,46 @@ class MessageServiceTest extends TestCase
         });
     }
 
+    public function test_send_template_with_button_components(): void
+    {
+        Http::fake(['*' => Http::response(['messages' => [['id' => 'wamid.btn']]])]);
+
+        $this->service
+            ->to('601234')
+            ->template(name: 'order_update', language: 'en_US')
+            ->component(type: 'header', format: 'text', text: 'Your Order is Shipped!')
+            ->component(type: 'body', parameters: [
+                ['type' => 'text', 'text' => 'SKBUP2-4CPIG9'],
+            ])
+            ->component(type: 'footer', text: 'Thank you for your business.')
+            ->component(type: 'button', subType: 'url', index: 0, parameters: [
+                ['type' => 'text', 'text' => 'tracking_url_parameter'],
+            ])
+            ->component(type: 'button', subType: 'quick_reply', index: 1, parameters: [
+                ['type' => 'text', 'text' => 'View Details'],
+            ])
+            ->send();
+
+        Http::assertSent(function ($request) {
+            $body = $request->data();
+            $components = $body['template']['components'];
+
+            return $body['template']['name'] === 'order_update'
+                && $components[0]['type'] === 'header'
+                && $components[0]['format'] === 'text'
+                && $components[0]['text'] === 'Your Order is Shipped!'
+                && $components[1]['type'] === 'body'
+                && $components[2]['type'] === 'footer'
+                && $components[2]['text'] === 'Thank you for your business.'
+                && $components[3]['type'] === 'button'
+                && $components[3]['sub_type'] === 'url'
+                && $components[3]['index'] === 0
+                && $components[4]['type'] === 'button'
+                && $components[4]['sub_type'] === 'quick_reply'
+                && $components[4]['index'] === 1;
+        });
+    }
+
     public function test_payload_merges_with_chain(): void
     {
         Http::fake(['*' => Http::response(['messages' => [['id' => 'wamid.merge']]])]);

@@ -115,6 +115,26 @@ class WhatsappChannelTest extends TestCase
                 && $body['image']['caption'] === 'Your receipt';
         });
     }
+
+    public function test_sends_template_with_button_components(): void
+    {
+        Http::fake(['*' => Http::response(['messages' => [['id' => 'wamid.btn']]])]);
+
+        $channel = app(WhatsappChannel::class);
+        $channel->send(new TestNotifiable(), new ButtonTemplateNotification());
+
+        Http::assertSent(function ($request) {
+            $body = $request->data();
+            $components = $body['template']['components'];
+
+            return $body['template']['name'] === 'order_update'
+                && $components[0]['type'] === 'header'
+                && $components[0]['format'] === 'text'
+                && $components[1]['type'] === 'button'
+                && $components[1]['sub_type'] === 'url'
+                && $components[1]['index'] === 0;
+        });
+    }
 }
 
 class TestNotifiable
@@ -181,5 +201,18 @@ class ImageNotification extends Notification
     {
         return WhatsappMessage::create()
             ->image(link: 'https://example.com/photo.jpg', caption: 'Your receipt');
+    }
+}
+
+class ButtonTemplateNotification extends Notification
+{
+    public function toWhatsapp($notifiable): WhatsappMessage
+    {
+        return WhatsappMessage::create()
+            ->template(name: 'order_update', language: 'en_US')
+            ->component(type: 'header', format: 'text', text: 'Shipped!')
+            ->component(type: 'button', subType: 'url', index: 0, parameters: [
+                ['type' => 'text', 'text' => 'tracking_param'],
+            ]);
     }
 }
