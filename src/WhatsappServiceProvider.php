@@ -45,6 +45,8 @@ class WhatsappServiceProvider extends ServiceProvider
                 config: config('whatsapp'),
             );
         });
+
+        $this->app->alias('whatsapp', Whatsapp::class);
     }
 
     protected function publishMigrations()
