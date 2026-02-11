@@ -2,6 +2,14 @@
 
 All notable changes to `laraditz/whatsapp` will be documented in this file
 
+## 1.0.1 - 2026-02-11
+
+### Added
+
+- WhatsApp notification channel (`WhatsappChannel`) for Laravel's built-in notification system
+- `WhatsappMessage` fluent builder for composing notifications with full message type support
+- Container alias for `Whatsapp` class to support dependency injection by class name
+
 ## 1.0.0 - 2026-02-11
 
 ### Added
