@@ -3,58 +3,48 @@
 namespace Laraditz\Whatsapp;
 
 use Illuminate\Support\ServiceProvider;
+use Laraditz\Whatsapp\Contracts\AccountRepository;
+use Laraditz\Whatsapp\Repositories\ConfigAccountRepository;
+use Laraditz\Whatsapp\Repositories\DatabaseAccountRepository;
 
 class WhatsappServiceProvider extends ServiceProvider
 {
-    /**
-     * Bootstrap the application services.
-     */
-    public function boot()
+    public function boot(): void
     {
-        /*
-         * Optional methods to load your package assets
-         */
-        // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'whatsapp');
-        // $this->loadViewsFrom(__DIR__.'/../resources/views', 'whatsapp');
-        // $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        // $this->loadRoutesFrom(__DIR__.'/routes.php');
-
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__.'/../config/config.php' => config_path('whatsapp.php'),
-            ], 'config');
+            ], 'whatsapp-config');
 
-            // Publishing the views.
-            /*$this->publishes([
-                __DIR__.'/../resources/views' => resource_path('views/vendor/whatsapp'),
-            ], 'views');*/
+            $this->publishesMigrations([
+                __DIR__.'/../database/migrations' => database_path('migrations'),
+            ], 'whatsapp-migrations');
 
-            // Publishing assets.
-            /*$this->publishes([
-                __DIR__.'/../resources/assets' => public_path('vendor/whatsapp'),
-            ], 'assets');*/
-
-            // Publishing the translation files.
-            /*$this->publishes([
-                __DIR__.'/../resources/lang' => resource_path('lang/vendor/whatsapp'),
-            ], 'lang');*/
-
-            // Registering package commands.
-            // $this->commands([]);
+            $this->commands([
+                Console\SyncTemplatesCommand::class,
+                Console\SyncMessagesCommand::class,
+            ]);
         }
+
+        $this->loadRoutesFrom(__DIR__.'/../routes/whatsapp.php');
     }
 
-    /**
-     * Register the application services.
-     */
-    public function register()
+    public function register(): void
     {
-        // Automatically apply the package configuration
         $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'whatsapp');
 
-        // Register the main class to use with the facade
-        $this->app->singleton('whatsapp', function () {
-            return new Whatsapp;
+        $this->app->singleton(AccountRepository::class, function () {
+            return match (config('whatsapp.account_driver')) {
+                'database' => new DatabaseAccountRepository(),
+                default => new ConfigAccountRepository(),
+            };
+        });
+
+        $this->app->singleton('whatsapp', function ($app) {
+            return new Whatsapp(
+                accountRepository: $app->make(AccountRepository::class),
+                config: config('whatsapp'),
+            );
         });
     }
 }
