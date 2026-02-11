@@ -2,6 +2,7 @@
 
 namespace Laraditz\Whatsapp;
 
+use Illuminate\Support\Str;
 use Illuminate\Support\ServiceProvider;
 use Laraditz\Whatsapp\Contracts\AccountRepository;
 use Laraditz\Whatsapp\Repositories\ConfigAccountRepository;
@@ -13,12 +14,10 @@ class WhatsappServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/config.php' => config_path('whatsapp.php'),
+                __DIR__ . '/../config/config.php' => config_path('whatsapp.php'),
             ], 'whatsapp-config');
 
-            $this->publishesMigrations([
-                __DIR__.'/../database/migrations' => database_path('migrations'),
-            ], 'whatsapp-migrations');
+            $this->publishMigrations();
 
             $this->commands([
                 Console\SyncTemplatesCommand::class,
@@ -26,12 +25,12 @@ class WhatsappServiceProvider extends ServiceProvider
             ]);
         }
 
-        $this->loadRoutesFrom(__DIR__.'/../routes/whatsapp.php');
+        $this->loadRoutesFrom(__DIR__ . '/../routes/whatsapp.php');
     }
 
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'whatsapp');
+        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'whatsapp');
 
         $this->app->singleton(AccountRepository::class, function () {
             return match (config('whatsapp.account_driver')) {
@@ -46,5 +45,32 @@ class WhatsappServiceProvider extends ServiceProvider
                 config: config('whatsapp'),
             );
         });
+    }
+
+    protected function publishMigrations()
+    {
+        $databasePath = __DIR__ . '/../database/migrations/';
+        $migrationPath = database_path('migrations/');
+
+        $files = array_diff(scandir($databasePath), array('.', '..'));
+        $date = date('Y_m_d');
+        $time = date('His');
+
+        $migrationFiles = collect($files)
+            ->mapWithKeys(function (string $file) use ($databasePath, $migrationPath, $date, &$time) {
+                $filename = Str::replace(Str::substr($file, 0, 17), '', $file);
+
+                $found = glob($migrationPath . '*' . $filename);
+                $time = date("His", strtotime($time) + 1); // ensure in order
+    
+                return !!count($found) === true ? []
+                    : [
+                        $databasePath . $file => $migrationPath . $date . '_' . $time . $filename,
+                    ];
+            });
+
+        if ($migrationFiles->isNotEmpty()) {
+            $this->publishes($migrationFiles->toArray(), 'whatsapp-migrations');
+        }
     }
 }
