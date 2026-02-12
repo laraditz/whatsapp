@@ -2,6 +2,12 @@
 
 All notable changes to `laraditz/whatsapp` will be documented in this file
 
+## 1.0.2 - 2026-02-12
+
+### Changed
+
+- Extended `component()` method to support `subType`, `index`, `format`, and `text` parameters for header, footer, and button template components
+
 ## 1.0.1 - 2026-02-11
 
 ### Added
