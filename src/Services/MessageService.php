@@ -142,12 +142,22 @@ class MessageService
         return $this;
     }
 
-    public function component(string $type, array $parameters): static
-    {
-        $this->data['template']['components'][] = [
+    public function component(
+        string $type,
+        ?array $parameters = null,
+        ?string $subType = null,
+        ?int $index = null,
+        ?string $format = null,
+        ?string $text = null,
+    ): static {
+        $this->data['template']['components'][] = array_filter([
             'type' => $type,
             'parameters' => $parameters,
-        ];
+            'sub_type' => $subType,
+            'index' => $index,
+            'format' => $format,
+            'text' => $text,
+        ], fn ($value) => ! is_null($value));
 
         return $this;
     }

@@ -103,9 +103,22 @@ class WhatsappMessage
         return $this;
     }
 
-    public function component(string $type, array $parameters): static
-    {
-        $this->components[] = ['type' => $type, 'parameters' => $parameters];
+    public function component(
+        string $type,
+        ?array $parameters = null,
+        ?string $subType = null,
+        ?int $index = null,
+        ?string $format = null,
+        ?string $text = null,
+    ): static {
+        $this->components[] = array_filter([
+            'type' => $type,
+            'parameters' => $parameters,
+            'subType' => $subType,
+            'index' => $index,
+            'format' => $format,
+            'text' => $text,
+        ], fn ($value) => ! is_null($value));
 
         return $this;
     }

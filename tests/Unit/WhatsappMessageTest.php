@@ -154,6 +154,38 @@ class WhatsappMessageTest extends TestCase
         $this->assertSame([], $message->components);
     }
 
+    public function test_component_with_button_params(): void
+    {
+        $message = WhatsappMessage::create()
+            ->template(name: 'order_update', language: 'en')
+            ->component(type: 'header', format: 'text', text: 'Shipped!')
+            ->component(type: 'button', subType: 'url', index: 0, parameters: [
+                ['type' => 'text', 'text' => 'tracking_param'],
+            ]);
+
+        $this->assertCount(2, $message->components);
+        $this->assertSame('header', $message->components[0]['type']);
+        $this->assertSame('text', $message->components[0]['format']);
+        $this->assertSame('Shipped!', $message->components[0]['text']);
+        $this->assertSame('button', $message->components[1]['type']);
+        $this->assertSame('url', $message->components[1]['subType']);
+        $this->assertSame(0, $message->components[1]['index']);
+    }
+
+    public function test_component_omits_null_fields(): void
+    {
+        $message = WhatsappMessage::create()
+            ->template(name: 'hello', language: 'en')
+            ->component(type: 'body', parameters: [
+                ['type' => 'text', 'text' => 'test'],
+            ]);
+
+        $this->assertArrayNotHasKey('subType', $message->components[0]);
+        $this->assertArrayNotHasKey('index', $message->components[0]);
+        $this->assertArrayNotHasKey('format', $message->components[0]);
+        $this->assertArrayNotHasKey('text', $message->components[0]);
+    }
+
     public function test_reaction_sets_type_and_data(): void
     {
         $message = WhatsappMessage::create()->reaction(messageId: 'wamid.xxx', emoji: "\u{1F44D}");

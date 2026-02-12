@@ -207,6 +207,38 @@ Whatsapp::message()
     ->send();
 ```
 
+```php
+// Template with header, footer, and button components
+Whatsapp::message()
+    ->to('60123456789')
+    ->template(name: 'order_update', language: 'en_US')
+    ->component(type: 'header', format: 'text', text: 'Your Order is Shipped!')
+    ->component(type: 'body', parameters: [
+        ['type' => 'text', 'text' => 'SKBUP2-4CPIG9'],
+    ])
+    ->component(type: 'footer', text: 'Thank you for your business.')
+    ->component(type: 'button', subType: 'url', index: 0, parameters: [
+        ['type' => 'text', 'text' => 'tracking_url_parameter'],
+    ])
+    ->component(type: 'button', subType: 'quick_reply', index: 1, parameters: [
+        ['type' => 'text', 'text' => 'View Details'],
+    ])
+    ->send();
+```
+
+The `component()` method supports these optional parameters:
+
+| Parameter    | Type     | Used for                                      |
+| ------------ | -------- | --------------------------------------------- |
+| `type`       | `string` | Component type (`header`, `body`, `footer`, `button`) |
+| `parameters` | `array`  | Dynamic parameter values                      |
+| `subType`    | `string` | Button sub-type (`url`, `quick_reply`)        |
+| `index`      | `int`    | Button position index (0-based)               |
+| `format`     | `string` | Header format (`text`, `image`, `video`, `document`) |
+| `text`       | `string` | Static text for header or footer              |
+
+Only non-null fields are included in the payload.
+
 ### Reaction
 
 ```php
