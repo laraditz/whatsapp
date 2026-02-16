@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Event;
 use Laraditz\Whatsapp\Events\MessageDelivered;
 use Laraditz\Whatsapp\Events\MessageRead;
 use Laraditz\Whatsapp\Events\MessageReceived;
+use Laraditz\Whatsapp\Events\WebhookReceived;
 use Laraditz\Whatsapp\Tests\TestCase;
 
 class WebhookTest extends TestCase
@@ -110,6 +111,44 @@ class WebhookTest extends TestCase
 
         Event::assertDispatched(MessageDelivered::class);
         Event::assertDispatched(MessageRead::class);
+    }
+
+    public function test_handle_dispatches_webhook_received_event(): void
+    {
+        Event::fake();
+        config()->set('whatsapp.logging.messages', false);
+        config()->set('whatsapp.logging.webhooks', false);
+
+        $payload = [
+            'entry' => [[
+                'changes' => [[
+                    'value' => [
+                        'messaging_product' => 'whatsapp',
+                        'metadata' => [
+                            'phone_number_id' => 'test-phone-id',
+                            'display_phone_number' => '601234',
+                        ],
+                        'messages' => [[
+                            'id' => 'wamid.test',
+                            'from' => '609999',
+                            'type' => 'text',
+                            'text' => ['body' => 'Hello'],
+                        ]],
+                    ],
+                ]],
+            ]],
+        ];
+
+        $secret = 'test-secret';
+        $signature = 'sha256='.hash_hmac('sha256', json_encode($payload), $secret);
+
+        $this->postJson('/whatsapp/webhook', $payload, [
+            'X-Hub-Signature-256' => $signature,
+        ]);
+
+        Event::assertDispatched(WebhookReceived::class, function ($event) use ($payload) {
+            return $event->payload === $payload;
+        });
     }
 
     public function test_handle_rejects_invalid_signature(): void

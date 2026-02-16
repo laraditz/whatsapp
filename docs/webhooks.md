@@ -35,7 +35,19 @@ POST requests are validated using the `X-Hub-Signature-256` header against the `
 
 ## Laravel Events
 
-The package dispatches three events based on the webhook payload:
+The package dispatches events based on the webhook payload:
+
+### WebhookReceived
+
+Dispatched for every valid incoming webhook, before any processing. Useful for debugging or inspecting the full raw payload.
+
+```php
+use Laraditz\Whatsapp\Events\WebhookReceived;
+
+Event::listen(WebhookReceived::class, function (WebhookReceived $event) {
+    $event->payload; // Full raw webhook payload (entry, changes, etc.)
+});
+```
 
 ### MessageReceived
 

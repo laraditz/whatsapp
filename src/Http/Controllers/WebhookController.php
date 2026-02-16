@@ -11,6 +11,7 @@ use Laraditz\Whatsapp\Enums\MessageStatus;
 use Laraditz\Whatsapp\Events\MessageDelivered;
 use Laraditz\Whatsapp\Events\MessageRead;
 use Laraditz\Whatsapp\Events\MessageReceived;
+use Laraditz\Whatsapp\Events\WebhookReceived;
 use Laraditz\Whatsapp\Models\WhatsappMessage;
 use Laraditz\Whatsapp\Models\WhatsappWebhookLog;
 
@@ -46,6 +47,8 @@ class WebhookController extends Controller
         if (! $this->verifySignature(request: $request)) {
             return response()->json(['error' => 'Invalid signature'], 403);
         }
+
+        WebhookReceived::dispatch($payload);
 
         $entries = $payload['entry'] ?? [];
 
