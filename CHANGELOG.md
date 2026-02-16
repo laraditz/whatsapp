@@ -2,6 +2,12 @@
 
 All notable changes to `laraditz/whatsapp` will be documented in this file
 
+## 1.0.3 - 2026-02-16
+
+### Added
+
+- `WebhookReceived` event dispatched with the full raw payload before webhook processing
+
 ## 1.0.2 - 2026-02-12
 
 ### Changed
