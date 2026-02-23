@@ -155,43 +155,48 @@ Whatsapp::message()
 
 ### Template
 
-All methods support both positional and named arguments:
+Simple template with no variables:
 
 ```php
-// Using named arguments
 Whatsapp::message()
     ->to('60123456789')
     ->template(name: 'hello_world', language: 'en')
     ->send();
-
-// Using positional arguments
-Whatsapp::message()
-    ->to('60123456789')
-    ->template('hello_world', 'en')
-    ->send();
 ```
 
+#### Positional Template Variables
+
+Use positional variables when your template uses `{{1}}`, `{{2}}`, etc. Parameters are matched by their order in the array:
+
 ```php
-// Template with body parameters (named)
+// Template body: "Your order {{1}} is now {{2}}."
 Whatsapp::message()
     ->to('60123456789')
     ->template(name: 'order_update', language: 'en')
     ->component(type: 'body', parameters: [
-        ['type' => 'text', 'text' => 'ORDER-123'],
-        ['type' => 'text', 'text' => 'shipped'],
-    ])
-    ->send();
-
-// Same example using positional arguments
-Whatsapp::message()
-    ->to('60123456789')
-    ->template('order_update', 'en')
-    ->component('body', [
-        ['type' => 'text', 'text' => 'ORDER-123'],
-        ['type' => 'text', 'text' => 'shipped'],
+        ['type' => 'text', 'text' => 'ORDER-123'],  // maps to {{1}}
+        ['type' => 'text', 'text' => 'shipped'],     // maps to {{2}}
     ])
     ->send();
 ```
+
+#### Named Template Variables
+
+Use named variables when your template uses `{{order_id}}`, `{{status}}`, etc. Each parameter includes a `parameter_name` key that maps to the variable name in the template:
+
+```php
+// Template body: "Your order {{order_id}} is now {{status}}."
+Whatsapp::message()
+    ->to('60123456789')
+    ->template(name: 'order_update', language: 'en')
+    ->component(type: 'body', parameters: [
+        ['type' => 'text', 'parameter_name' => 'order_id', 'text' => 'ORDER-123'],
+        ['type' => 'text', 'parameter_name' => 'status', 'text' => 'shipped'],
+    ])
+    ->send();
+```
+
+#### Header, Footer and Buttons
 
 ```php
 // Template with header image and body parameters
