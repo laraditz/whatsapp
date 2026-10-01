@@ -2,7 +2,7 @@
 
 All notable changes to `laraditz/whatsapp` will be documented in this file
 
-## Unreleased
+## 1.0.4 - 2026-010-01
 
 ### Added
 
