@@ -2,6 +2,12 @@
 
 All notable changes to `laraditz/whatsapp` will be documented in this file
 
+## 1.0.4 - 2026-010-01
+
+### Added
+
+- Laravel 13 support
+
 ## 1.0.3 - 2026-02-16
 
 ### Added
